@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the original paper."
+title: "Nonlinear Predictor Feedback for Input-Affine Systems with Distributed Input Delays — Reproduction"
+type: software
+authors:
+  - family-names: "Kado"
+    given-names: "Kenshin"
+license: MIT
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Ponomarev"
+      given-names: "Anton"
+  title: "Nonlinear Predictor Feedback for Input-Affine Systems with Distributed Input Delays"
+  journal: "IEEE Transactions on Automatic Control"
+  year: 2016
+  doi: "10.48550/arXiv.1601.00098"
