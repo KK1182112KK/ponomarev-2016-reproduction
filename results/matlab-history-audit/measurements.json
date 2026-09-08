@@ -1,0 +1,24 @@
+{
+  "source_head": "c498ddb74fcaf9a9672b6723fd8a75ac7ac2c621",
+  "tested_merge": "19b92a163fa2928b2a8c8453a91c4974e8f63f58",
+  "matlab_run_id": 34180001445,
+  "run_attempt": 2,
+  "artifact_id": 10038656300,
+  "artifact_sha256": "32ae89c2ada528f7a2951d0a21296efa036718bc9949a7c8d4a409c0f1445c05",
+  "matlab": "26.1.0.3346908 (R2026a) Update 5",
+  "python": "3.13.5",
+  "matching_source_test_hashes": 21,
+  "tests": {"passed": 18, "failed": 0, "incomplete": 0},
+  "difference_metric": "maximum absolute component difference over common output nodes",
+  "cross_language": [
+    {"case":"scalar-default", "X_error":1.0902390101819037e-13, "U_error":1.4445555862607762e-11, "matlab_final_norm":0.00005836603028968856},
+    {"case":"cascade-default", "X_error":5.10702591327572e-15, "U_error":4.884981308350689e-15, "matlab_final_norm":0.0004882151533551913},
+    {"case":"pendulum-pi2", "X_error":5.329070518200751e-15, "U_error":5.329070518200751e-15, "matlab_final_norm":0.02687457738143047},
+    {"case":"pendulum-pi", "X_error":5.10702591327572e-15, "U_error":4.884981308350689e-15, "matlab_final_norm":0.04460593293346775},
+    {"case":"pendulum-3pi2", "X_error":5.329070518200751e-15, "U_error":4.884981308350689e-15, "matlab_final_norm":0.06489204477946767},
+    {"case":"half-grid", "parameters":{"h":0.45,"dt":0.02,"t_end":0.1,"x0":[3.141592653589793,1.5707963267948966]}, "X_error":0.0017839351785919888, "U_error":0.03418381763274869, "matlab_final_norm":3.4997529238772276}
+  ],
+  "prehistory_probe": {"modules":["example_a","example_b","example_c"], "query":-0.004,"dt":0.01,"negative_history":1.0,"u_at_zero":9.0,"expected":1.0,"actual_each":9.0},
+  "eq86_zoh_probe": {"h":1.0,"dt":0.001,"T":2.0,"x0":[1,1],"past_u":0.0,"max_z1_difference":0.0020000000000000018,"stored_z1_t1":-0.09999366891399974,"zoh_z1_t1":-0.10199366891399975},
+  "scope": "Finite numerical and synthetic helper diagnostics. No solver modification or theorem invalidation. Default parameters are detailed in the companion report."
+}
