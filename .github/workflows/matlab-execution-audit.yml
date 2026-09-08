@@ -1,0 +1,33 @@
+name: MATLAB execution audit
+on:
+  pull_request:
+    branches: [main, master]
+    paths: ['matlab/run_cross_language_audit.m', '.github/workflows/matlab-execution-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record source hashes
+        run: |
+          mkdir -p results/matlab-audit
+          git rev-parse HEAD > results/matlab-audit/checkout.txt
+          find matlab/src matlab/tests python/src python/tests -type f -print0 | sort -z | xargs -0 sha256sum > results/matlab-audit/source-sha256.txt
+      - uses: matlab-actions/setup-matlab@v2
+        with:
+          release: R2026a
+      - name: Execute unchanged tests and physical-plant simulations
+        uses: matlab-actions/run-command@v2
+        with:
+          command: addpath('matlab'); run_cross_language_audit;
+      - name: Retain passes and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: matlab-execution-audit
+          path: results/matlab-audit/
+          retention-days: 90
