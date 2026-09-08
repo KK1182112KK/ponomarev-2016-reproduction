@@ -1,17 +1,20 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite the original paper."
-title: "Nonlinear Predictor Feedback for Input-Affine Systems with Distributed Input Delays — Reproduction"
+message: "Cite this reproduction software separately from the original paper listed in references."
+title: "Ponomarev 2016: Equation-Linked Numerical Reproduction and Verification"
 type: software
 authors:
-  - family-names: "Kado"
+  - family-names: "Kotari"
     given-names: "Kenshin"
 license: MIT
-preferred-citation:
-  type: article
-  authors:
-    - family-names: "Ponomarev"
-      given-names: "Anton"
-  title: "Nonlinear Predictor Feedback for Input-Affine Systems with Distributed Input Delays"
-  journal: "IEEE Transactions on Automatic Control"
-  year: 2016
-  doi: "10.48550/arXiv.1601.00098"
+repository-code: "https://github.com/KK1182112KK/ponomarev-2016-reproduction"
+abstract: "Independent numerical implementation and equation-linked audit. Original theory is credited to Anton Ponomarev. Development and documentation were AI-assisted. Equation numbers follow arXiv:1601.00098v1."
+references:
+  - type: article
+    authors:
+      - family-names: "Ponomarev"
+        given-names: "Anton"
+    title: "Nonlinear Predictor Feedback for Input-Affine Systems with Distributed Input Delays"
+    journal: "IEEE Transactions on Automatic Control"
+    year: 2016
+    doi: "10.1109/TAC.2015.2496191"
+    url: "https://arxiv.org/abs/1601.00098v1"

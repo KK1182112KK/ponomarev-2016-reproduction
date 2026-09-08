@@ -1,94 +1,43 @@
-# Nonlinear Predictor Feedback for Input-Affine Systems with Distributed Input Delays
-### Reproduction of Ponomarev (IEEE TAC, 2016)
+# Ponomarev (2016): equation-linked numerical reproduction
 
-[![MATLAB Tests](https://github.com/YOUR_USERNAME/ponomarev-2016/actions/workflows/matlab-ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/ponomarev-2016/actions/workflows/matlab-ci.yml)
-[![Python Tests](https://github.com/YOUR_USERNAME/ponomarev-2016/actions/workflows/python-ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/ponomarev-2016/actions/workflows/python-ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+**Reproduction implementation and verification project: Kenshin Kotari.** Original models, predictor design, and theorems are Anton Ponomarev's. Development and documentation were AI-assisted. Cite this software separately using [CITATION.cff](CITATION.cff).
 
-## Overview
+**Source [P16]:** *Nonlinear Predictor Feedback for Input-Affine Systems with Distributed Input Delays*, DOI [10.1109/TAC.2015.2496191](https://doi.org/10.1109/TAC.2015.2496191). **All equation numbers here follow [arXiv:1601.00098v1](https://arxiv.org/abs/1601.00098v1), pages 1–6**, not an assumed renumbering of the journal version.
 
-This paper extends predictor feedback methodology to control-affine nonlinear systems with distributed input delays. A state transformation maps the delayed system to a delay-free form, enabling standard stabilization techniques. Three numerical examples demonstrate the approach: a scalar system with analytical predictor, a 2-state system with explicit cascade transformation, and an inverted pendulum with numerical predictor integration.
+## Equations and measured outcomes
 
-## Key Results
+The default solvers advance the physical plant with Forward Euler and stored-input history; predictors are reconstructed at each control update. They do not generate the physical response from an independently stabilized target trajectory. They retain nearest-grid delay lookup and their original numerical conventions, not an exact continuous-time DDE implementation.
 
-<!-- Hero figures will be added after MATLAB generates them -->
-| Example A (Scalar) | Example C (Inverted Pendulum) |
-|:---:|:---:|
-| ![Example A](matlab/results/fig2_example_a.png) | ![Example C](matlab/results/fig1_paper_figure1.png) |
+| Project example | Source equations | Actual recorded outcome |
+|---|---|---|
+| A — scalar distributed input | Plant **(73)**, feedback **(74)**, predictor/gain **(31)–(34), (40)–(42)** | Repository-chosen sine example: at dt=0.001, T=10, **abs(x)=0.0000583660303**. These numerical parameters are not specified in VI-A. |
+| B — explicit cascade | Plant **(75)**, transforms **(76)–(88)**, feedback **(85), (88)** | At dt=0.001, T=15, **norm(x)=0.000488215153**. This is our numerical illustration of VI-B, not a published figure reproduction. |
+| C — inverted pendulum | Plant **(89)**, predictor **(46)–(47)**, gain **(40), (92)–(93)**, feedback **(104)**, **Fig. 1** | At dt=0.01, T=10, the three initial angles give state norms **0.0268745774, 0.0446059329, 0.0648920448**. None is below 0.01 at T=10. |
 
-**Figure 1 (right)** reproduces the paper's Figure 1: predictor feedback stabilizes the inverted pendulum from initial angles x1(0) in {pi/2, pi, 3pi/2} with delay h = pi/4.
+[Full equation-to-code maps, all nine runs, conditions, and interpretation](docs/REPRODUCTION_REPORT.md) · [Measured CSV](results/reporting-audit/summary.csv)
 
-## Methods
+The previous README's blanket claim that Example C reaches a norm below 1e-2 is **not supported by these runs**. The existing tests use a 0.1 terminal threshold for these cases; passing those tests does not establish the stronger README claim. A finite nonzero terminal norm is not evidence of instability. No exact pixel-level reproduction, global-stability proof, or MATLAB/Python equivalence is claimed.
 
-The predictor transformation Y(x, ut) maps the delayed input system to a delay-free form:
+## Execute the reproducible audit
 
-- **Predictor ODE**: Solve xi'(s) = f(xi) + B1*phi(s-h) + integral terms, s in [0, h]
-- **Effective gain**: B(y, phi) = B1 + beta(h), where beta solves a coupled ODE
-- **Feedback**: kappa = -k * B^T * grad(v0(y))
+[Open the audit notebook in Colab](https://colab.research.google.com/github/KK1182112KK/ponomarev-2016-reproduction/blob/master/python/notebook.ipynb)
 
-All three examples use Forward Euler integration (per paper specification, dt = 0.01 for Example C).
-
-## Quick Start
-
-### MATLAB
-```matlab
-git clone https://github.com/YOUR_USERNAME/ponomarev-2016.git
-cd ponomarev-2016/matlab
-run_all          % Simulate all 3 examples
-run_all('fig')   % Generate figures
-run_all('test')  % Run validation suite (18 tests)
-run_all('all')   % Everything
-```
-
-### Python
 ```bash
-cd ponomarev-2016
-pip install -r python/requirements.txt
-python python/run_all.py             # Simulate all examples
-python python/run_all.py --mode fig  # Generate figures
-pytest python/tests/ -v              # Run tests
+pip install numpy scipy matplotlib pytest
+python python/run_reporting_audit.py
+python -m pytest python/tests -q
 ```
 
-## Validation
+The runner executes nine declared cases and writes every trajectory CSV, stdout log, parameters, and source/environment metadata to `results/reporting-audit/`. Full raw runs and trajectories are also in the [CI evidence artifact](https://github.com/KK1182112KK/ponomarev-2016-reproduction/actions/runs/34175280499); that artifact expires after 30 days, while committed summaries and the reproducible runner remain in Git.
 
-| Criterion | Result |
-|-----------|--------|
-| Example C convergence (3 ICs) | x(t_end) < 1e-2 for all |
-| Euler vs RK4 agreement | max error < 0.1 at dt=0.01 |
-| Convergence order (Euler) | O(dt) verified across 4 refinements |
-| Lyapunov V(z) decay | Non-increasing after transient (>80% steps) |
-| Cascade identity (Eq. 86-88 vs 76-77) | Matches to machine precision |
-| MATLAB/Python agreement | Cross-validated |
+MATLAB source is retained. Its entry point is `cd matlab; run_all`, but **MATLAB was not executed in this reporting audit**. The audit notebook executes the same reporting runner; the CI test statement refers to the specific tested source snapshot below.
 
-## Examples
+## Verification and provenance
 
-### Example A: Scalar Predictor (Eq. 73-74)
-- System: dx/dt = sin(x) + u(t) + 0.5*u(t-0.5) + integral(u)
-- Feedback: kappa = -(sin(y) + y) / B, yielding dy/dt = -y
+**32 existing Python tests passed** on the [recorded GitHub Actions run](https://github.com/KK1182112KK/ponomarev-2016-reproduction/actions/runs/34175280499), and all nine declared numerical cases completed both locally and in that run. [Raw test log](results/reporting-audit/tests.log) · [Test record](results/reporting-audit/test-results.json) · [Source/environment manifest](results/reporting-audit/provenance.json).
 
-### Example B: Explicit Prediction (Eq. 75-88)
-- 2-state system with cascade transformation to z-coordinates
-- Lyapunov-based feedback with V(z) = (z1 + z2(z2-2)/2)^2 + z2^2
+The solver baseline is `a491223`; the audit runner head is `ece0a41`; CI checked out test merge `46affcfa6c402ff571751af001c79ab6bbbd6365`. The solvers and all pre-existing test assertions were unchanged. The report distinguishes numerical refinement, algebraic identities, and replay of an existing control sequence from stronger independent validation.
 
-### Example C: Inverted Pendulum (Eq. 89-104)
-- System: dx1/dt = x2, dx2/dt = sin(x1) + u(t) + u(t-pi/4)
-- Numerical predictor integration at each time step
-- Reproduces paper's Figure 1
+[Exact numerical contract](docs/METHODS.md) · [Source specification](docs/SPEC.md) · [Reporting standard](docs/REPORTING_STANDARD.md) · [Related reproduction projects](https://github.com/KK1182112KK/krstic-2016-reproduction)
 
-## Citation
-
-If you use this code, please cite the original paper:
-
-```bibtex
-@article{ponomarev2016nonlinear,
-  author  = {Anton Ponomarev},
-  title   = {Nonlinear Predictor Feedback for Input-Affine Systems with Distributed Input Delays},
-  journal = {IEEE Transactions on Automatic Control},
-  year    = {2016},
-  note    = {arXiv:1601.00098v1}
-}
-```
-
-## License
-
-This project is licensed under the MIT License -- see [LICENSE](LICENSE) for details.
+Implementation code remains under the existing [MIT license](LICENSE). Original theory and figures remain attributed to their authors. No paper PDF or author-generated plot is redistributed.
